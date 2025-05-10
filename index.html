@@ -1,55 +1,374 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>fotos aleatorias </title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #f0f0f0;
-        }
-        h1 {
-            color: #333;
-        }
-        .container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 10px;
-            padding: 20px;
-        }
-        img {
-            width: 200px;
-            height: auto;
-            border-radius: 10px;
-            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Painel da Polícia Federal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      background-color: #1a1a1a;
+      color: #fff;
+      font-family: 'Courier New', monospace;
+      margin: 0;
+      padding: 10px;
+    }
+    h1 {
+      text-align: center;
+      font-size: 1.6rem;
+      margin-bottom: 20px;
+      color: #fff;
+    }
+    .dev-section {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 10px;
+    }
+    .dev-section img {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: 2px solid #fff;
+    }
+    .contact {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 0.9rem;
+      color: #fff;
+    }
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .tab-btn {
+      background-color: #333;
+      border: 1px solid #fff;
+      padding: 8px 10px;
+      border-radius: 8px;
+      color: #fff;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.2s ease;
+    }
+    .tab-btn:hover {
+      background-color: #fff;
+      color: #000;
+    }
+    .tab-btn.active {
+      background-color: #fff;
+      color: #1a1a1a;
+    }
+    .tab-content {
+      display: none;
+      background-color: #333;
+      padding: 15px;
+      border-radius: 5px;
+      box-shadow: 0 0 5px #fff;
+      animation: fadeIn 0.3s;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    textarea, input {
+      width: 100%;
+      padding: 8px;
+      margin-top: 10px;
+      background: #000;
+      color: #fff;
+      border: 1px solid #fff;
+      border-radius: 4px;
+    }
+    button {
+      margin-top: 10px;
+      background: #fff;
+      border: none;
+      padding: 10px;
+      color: #000;
+      border-radius: 4px;
+      cursor: pointer;
+      width: 100%;
+      font-weight: bold;
+    }
+    ul {
+      padding-left: 15px;
+    }
+  </style>
 </head>
 <body>
-    <h1>API de Fotos</h1>
-    <div class="container" id="galeria"></div>
+  <h1>PAINEL DE CONSULTAS</h1>
+  <div class="dev-section">
+    <img src="https://i.ibb.co/wF6Nn1pc/1000890744.jpg">
+    <img src="https://i.ibb.co/GvfFzZdB/1000891059.webp">
+  </div>
+  <div class="contact">| STATUS | ONLINE | BETA 0.0.1 |</div>
 
-    <script>
-        async function carregarFotos() {
-            try {
-                let resposta = await fetch("fotos.json");
-                let dados = await resposta.json();
+  <div class="tabs">
+    <div class="tab-btn active" onclick="openTab('vcc')">💳 VCC</div>
+    <div class="tab-btn" onclick="openTab('cnpj')">🏢 CNPJ</div>
+    <div class="tab-btn" onclick="openTab('cep')">📍 CEP</div>
+    <div class="tab-btn" onclick="openTab('ddd')">☎️ DDD</div>
+    <div class="tab-btn" onclick="openTab('ip')">🌍 IP</div>
+    <div class="tab-btn" onclick="openTab('bin')">💰 BIN</div>
+    <div class="tab-btn" onclick="openTab('clima')">☁️ CLIMA</div>
+    <div class="tab-btn" onclick="openTab('fake-data')">👤 FAKE DATA</div>
+    <div class="tab-btn" onclick="openTab('dns-info')">🌐 DNS</div>
+    <div class="tab-btn" onclick="openTab('gerar-dados')">📄 DADOS</div>
+  </div>
 
-                let galeria = document.getElementById("galeria");
-                dados.fotos.forEach(link => {
-                    let img = document.createElement("img");
-                    img.src = link;
-                    galeria.appendChild(img);
-                });
-            } catch (error) {
-                console.error("Erro ao carregar as fotos:", error);
-            }
-        }
+  <div id="vcc" class="tab-content" style="display:block;">
+    <h3>Gerar Cartões VCC</h3>
+    <button onclick="buscarVCC()">Gerar VCC</button>
+    <ul id="lista-vcc"></ul>
+  </div>
 
-        carregarFotos();
-    </script>
+  <div id="gerar-dados" class="tab-content">
+    <h3>Gerar Dados</h3>
+    <button onclick="gerarCPF()">CPF</button>
+    <button onclick="gerarCartao()">CARTÃO</button>
+    <button onclick="gerarRG()">RG</button>
+    <ul id="lista-dados"></ul>
+  </div>
+
+  <div id="cnpj" class="tab-content">
+    <h3>Consulta de CNPJ</h3>
+    <input type="text" id="cnpj-input" placeholder="Digite o CNPJ">
+    <button onclick="buscarCNPJ()">Consultar</button>
+    <textarea id="resultado-cnpj" rows="8" readonly></textarea>
+  </div>
+
+  <div id="cep" class="tab-content">
+    <h3>Consulta de CEP</h3>
+    <input type="text" id="cep-input" placeholder="Digite o CEP">
+    <button onclick="buscarCEP()">Consultar</button>
+    <textarea id="resultado-cep" rows="5" readonly></textarea>
+  </div>
+
+  <div id="ddd" class="tab-content">
+    <h3>Consulta de DDD</h3>
+    <input type="text" id="ddd-input" placeholder="Digite o DDD">
+    <button onclick="buscarDDD()">Consultar</button>
+    <textarea id="resultado-ddd" rows="4" readonly></textarea>
+  </div>
+
+  <div id="ip" class="tab-content">
+    <h3>Geolocalização IP</h3>
+    <input type="text" id="ip-input" placeholder="Digite o IP">
+    <button onclick="buscarIP()">Obter Localização</button>
+    <textarea id="resultado-ip" rows="5" readonly></textarea>
+  </div>
+
+  <div id="bin" class="tab-content">
+    <h3>Consulta de BIN</h3>
+    <input type="text" id="bin-input" placeholder="Digite o BIN (6 dígitos)">
+    <button onclick="buscarBIN()">Consultar</button>
+    <textarea id="resultado-bin" rows="5" readonly></textarea>
+  </div>
+
+  <div id="clima" class="tab-content">
+    <h3>Previsão do Tempo
+    FUNÇÃO INDISPONÍVEL<h3>
+    <input type="text" id="cidade-input" placeholder="Digite a cidade">
+    <button onclick="buscarClima()">Consultar</button>
+    <textarea id="resultado-clima" rows="5" readonly></textarea>
+  </div>
+
+  <div id="fake-data" class="tab-content">
+    <h3>Gerar Dados Falsos</h3>
+    <button onclick="gerarFakeData()">Gerar Pessoas Falsas</button>
+    <ul id="lista-fake-data"></ul>
+  </div>
+
+  <div id="dns-info" class="tab-content">
+    <h3>Informações de DNS</h3>
+    <input type="text" id="domain-input" placeholder="Digite o domínio">
+    <button onclick="buscarDNS()">Consultar DNS</button>
+    <textarea id="resultado-dns" rows="5" readonly></textarea>
+  </div>
+
+  <script>
+    function openTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+
+      document.getElementById(tabId).style.display = 'block';
+      event.target.classList.add('active');
+    }
+
+    // Funções de gerar dados falsos
+    function gerarCPF() {
+      const cpf = `${Math.floor(Math.random() * 999999999)}`.padStart(9, '0'); // CPF aleatório
+      const lista = document.getElementById('lista-dados');
+      const li = document.createElement('li');
+      li.textContent = `CPF: ${cpf.slice(0, 3)}.${cpf.slice(3, 6)}.${cpf.slice(6, 9)}-${Math.floor(Math.random() * 100)}`;
+      lista.appendChild(li);
+    }
+
+    function gerarCartao() {
+      const cartao = `4005 5500 0000 ${Math.floor(Math.random() * 10000)}`; // Cartão aleatório
+      const lista = document.getElementById('lista-dados');
+      const li = document.createElement('li');
+      li.textContent = `Número do Cartão: ${cartao}`;
+      lista.appendChild(li);
+    }
+
+    function gerarRG() {
+      const rg = `${Math.floor(Math.random() * 100000000)}-${Math.floor(Math.random() * 10)}`; // RG aleatório
+      const lista = document.getElementById('lista-dados');
+      const li = document.createElement('li');
+      li.textContent = `RG: ${rg}`;
+      lista.appendChild(li);
+    }
+
+    // Funções de consulta com APIs
+    async function buscarVCC() {
+      const lista = document.getElementById('lista-vcc');
+      lista.innerHTML = 'Carregando...';
+
+      try {
+        const res = await fetch('https://api.siputzx.my.id/api/tools/vcc-generator?type=MasterCard&count=5');
+        const dados = await res.json();
+
+        lista.innerHTML = '';
+        dados.data.forEach(cartao => {
+          const li = document.createElement('li');
+          li.textContent = `Cartão: ${cartao.cardNumber} | Exp: ${cartao.expirationDate} | CVV: ${cartao.cvv}`;
+          lista.appendChild(li);
+        });
+      } catch (error) {
+        console.error('Erro ao buscar dados:', error);
+        lista.innerHTML = 'Erro ao buscar dados.';
+      }
+    }
+
+    async function buscarCNPJ() {
+      const cnpj = document.getElementById('cnpj-input').value;
+      const resEl = document.getElementById('resultado-cnpj');
+      resEl.textContent = 'Consultando...';
+
+      try {
+        const res = await fetch(`https://www.receitaws.com.br/v1/cnpj/${cnpj}`);
+        const dados = await res.json();
+        resEl.textContent = JSON.stringify(dados, null, 2);
+      } catch {
+        resEl.textContent = 'Erro na consulta do CNPJ.';
+      }
+    }
+
+    async function buscarCEP() {
+      const cep = document.getElementById('cep-input').value;
+      const resEl = document.getElementById('resultado-cep');
+      resEl.textContent = 'Consultando...';
+
+      try {
+        const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+        const dados = await res.json();
+        resEl.textContent = JSON.stringify(dados, null, 2);
+      } catch {
+        resEl.textContent = 'Erro na consulta do CEP.';
+      }
+    }
+
+    async function buscarDDD() {
+      const ddd = document.getElementById('ddd-input').value;
+      const resEl = document.getElementById('resultado-ddd');
+      resEl.textContent = 'Consultando...';
+
+      try {
+        const res = await fetch(`https://brasilapi.com.br/api/ddd/v1/${ddd}`);
+        const dados = await res.json();
+        resEl.textContent = JSON.stringify(dados, null, 2);
+      } catch {
+        resEl.textContent = 'Erro na consulta do DDD.';
+      }
+    }
+
+    function geolocalizacaoIP() {
+      alert('Obtendo localização do IP...');
+      // Adicionar a lógica para geolocalização IP aqui
+    }
+
+    async function buscarIP() {
+      const ip = document.getElementById('ip-input').value;
+      const resEl = document.getElementById('resultado-ip');
+      resEl.textContent = 'Consultando...';
+
+      try {
+        const res = await fetch(`https://ipinfo.io/${ip}/json`);
+        const dados = await res.json();
+        resEl.textContent = `IP: ${dados.ip}\nLocalização: ${dados.city}, ${dados.region}, ${dados.country}\nOrganização: ${dados.org}`;
+      } catch {
+        resEl.textContent = 'Erro ao consultar o IP.';
+      }
+    }
+
+    async function buscarBIN() {
+      const bin = document.getElementById('bin-input').value;
+      const resEl = document.getElementById('resultado-bin');
+      resEl.textContent = 'Consultando...';
+
+      try {
+        const res = await fetch(`https://lookup.binlist.net/${bin}`);
+        const dados = await res.json();
+        resEl.textContent = `Banco: ${dados.bank.name}\nMarca: ${dados.scheme}\nTipo: ${dados.type}`;
+      } catch {
+        resEl.textContent = 'Erro ao consultar o BIN.';
+      }
+    }
+
+    async function buscarClima() {
+      const cidade = document.getElementById('cidade-input').value;
+      const resEl = document.getElementById('resultado-clima');
+      resEl.textContent = 'Consultando...';
+
+      try {
+        const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${cidade}&appid=YOUR_API_KEY&units=metric&lang=pt_br`);
+        const dados = await res.json();
+        resEl.textContent = `Clima: ${dados.weather[0].description}\nTemperatura: ${dados.main.temp}°C\nHumidade: ${dados.main.humidity}%`;
+      } catch {
+        resEl.textContent = 'Erro ao consultar o clima.';
+      }
+    }
+
+    async function gerarFakeData() {
+      const lista = document.getElementById('lista-fake-data');
+      lista.innerHTML = 'Gerando dados falsos...';
+
+      try {
+        const res = await fetch('https://randomuser.me/api/?results=5');
+        const dados = await res.json();
+
+        lista.innerHTML = '';
+        dados.results.forEach(usuario => {
+          const li = document.createElement('li');
+          li.textContent = `Nome: ${usuario.name.first} ${usuario.name.last} | E-mail: ${usuario.email} | País: ${usuario.location.country}`;
+          lista.appendChild(li);
+        });
+      } catch (error) {
+        console.error('Erro ao gerar dados falsos:', error);
+        lista.innerHTML = 'Erro ao gerar dados.';
+      }
+    }
+
+    async function buscarDNS() {
+      const domain = document.getElementById('domain-input').value;
+      const resEl = document.getElementById('resultado-dns');
+      resEl.textContent = 'Consultando DNS...';
+
+      try {
+        const res = await fetch(`https://dns.google/resolve?name=${domain}`);
+        const dados = await res.json();
+        resEl.textContent = JSON.stringify(dados, null, 2);
+      } catch {
+        resEl.textContent = 'Erro ao consultar DNS.';
+      }
+    }
+  </script>
 </body>
-</html>
+    </html>
